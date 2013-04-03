@@ -123,7 +123,7 @@ def find_arxiv_category (title, author): # {{{
         pass
 
     s1 = found_title.lower().replace(' ', '')
-    s2 = title.lower().replace(' ', '')
+    s2 = unicodedata.normalize('NFKD', title).encode('ascii', 'ignore').lower().replace(' ', '')
 
     dist = distance(s1, s2)
     
@@ -235,6 +235,8 @@ if __name__ == "__main__": # {{{
         time.sleep(3)
 
         if cat:
+            print 'Found: %s' % (listings[k]['title'],)
+
             if cat not in cats:
                 cats[cat] = [ listings[k] ]
             else:
