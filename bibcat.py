@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import codecs
+import codecs, unicodedata
 import urllib
 import feedparser
 import io, time, sys, re
@@ -89,13 +89,16 @@ def parse_listings (lines):
 def find_arxiv_category (title, author): # {{{
 
     # print 'Looking for', title
+    #
+    clean_title  = urllib.quote(unicodedata.normalize('NFKD', title).encode('ascii', 'ignore'))
+    clean_author = urllib.quote(unicodedata.normalize('NFKD', title).encode('ascii', 'ignore'))
 
     if author:
         url = 'http://export.arxiv.org/api/query?search_query=ti:%(title)s%%20AND%%20au:%(author)s&start=0&max_results=1' % \
-                { 'title': urllib.quote(title), 'author': urllib.quote(author) }
+                { 'title': clean_title, 'author': clean_author }
     else:
         url = 'http://export.arxiv.org/api/query?search_query=ti:%(title)s&start=0&max_results=1' % \
-                { 'title': urllib.quote(title) }
+                { 'title': clean_title }
 
     # print url
     d = feedparser.parse(url)
