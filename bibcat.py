@@ -1,11 +1,13 @@
-# Python
+#!/usr/bin/env python
 
+import codecs
 import urllib
 import feedparser
 import io, time, sys, re
 
 def get_as_bibtex (buf):
     return get_as_bibtex_no_regex(buf)
+
 
 def get_as_bibtex_no_regex (buf):
     """
@@ -108,9 +110,6 @@ def find_arxiv_category (title, author): # {{{
             return find_arxiv_category(title, author=None)
 
         print "Cant find:", title, author
-
-        # print "Couldn't find it!"
-        # print ''
         return None
 
     category = ''
@@ -119,9 +118,6 @@ def find_arxiv_category (title, author): # {{{
         category = d['entries'][0]['arxiv_primary_category']['term']
     except:
         pass
-
-    # print 'Found', found_title, 'in', category
-    # print ''
 
     s1 = found_title.lower().replace(' ', '')
     s2 = title.lower().replace(' ', '')
@@ -142,10 +138,6 @@ def find_arxiv_category (title, author): # {{{
     if dist <= 10 and ratio < .5 and category:
         return category
     else:
-        # print s1
-        # print s2
-        # print 'distance: %s' % dist
-        # print ''
         pass
     
     return None
@@ -217,7 +209,7 @@ if __name__ == "__main__": # {{{
         print 'Please provide a bibfile.'
         exit(1)
 
-    f = open(bibfile, "r")
+    f = codecs.open(bibfile, "r", "utf-8")
  
     print 'Reading ...'
     lines = f.readlines()
@@ -225,8 +217,7 @@ if __name__ == "__main__": # {{{
     print 'Parsing ...'
     listings = parse_listings(lines)
 
-    cats = {"misc": []}
-    unresolvable = 0
+    cats = {"nocat": []}
 
     print 'Querying ...'
 
@@ -237,8 +228,6 @@ if __name__ == "__main__": # {{{
         authors = listings[k]['author']
         author = authors.split(' and ')[0]
 
-        # print author
-
         cat = find_arxiv_category(listings[k]['title'], author)
         time.sleep(3)
 
@@ -248,22 +237,11 @@ if __name__ == "__main__": # {{{
             else:
                 cats[cat].append( listings[k] ) 
         else:
-            cats["misc"].append( listings[k] )
-            unresolvable += 1
-
-    print 'unresolvable:', unresolvable
+            cats["nocat"].append( listings[k] )
 
     for k, v in cats.items():
-
-        # print '%s: %s' % (k, v)
-
-        with open(k + ".bib", "w") as f:
-            for bib in v:
-                f.writelines(bib['raw'])
+        if len(v) >= 1:
+            with open(k + ".bib", "w") as f:
+                for bib in v:
+                    f.writelines(bib['raw'])
 # }}}
-
-
-
-
-
-
