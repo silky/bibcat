@@ -112,7 +112,7 @@ def find_arxiv_category (title, author): # {{{
         if author:
             return find_arxiv_category(title, author=None)
 
-        print "Cant find:", title, author
+        # print "Cant find:", title, author
         return None
 
     category = ''
@@ -232,10 +232,11 @@ if __name__ == "__main__": # {{{
         author = authors.split(' and ')[0]
 
         cat = find_arxiv_category(listings[k]['title'], author)
-        time.sleep(3)
+        time.sleep(1)
 
         if cat:
-            print 'Found: %s' % (listings[k]['title'],)
+            clean_title = unicodedata.normalise('NFKD', listings[k]['title']).encode('ascii', 'ignore')
+            print 'Found: %s' % (clean_title,)
 
             if cat not in cats:
                 cats[cat] = [ listings[k] ]
