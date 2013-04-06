@@ -235,7 +235,7 @@ if __name__ == "__main__": # {{{
         time.sleep(1)
 
         if cat:
-            clean_title = unicodedata.normalise('NFKD', listings[k]['title']).encode('ascii', 'ignore')
+            clean_title = unicodedata.normalize('NFKD', listings[k]['title']).encode('ascii', 'ignore')
             print 'Found: %s' % (clean_title,)
 
             if cat not in cats:
