@@ -232,7 +232,7 @@ if __name__ == "__main__": # {{{
         author = authors.split(' and ')[0]
 
         cat = find_arxiv_category(listings[k]['title'], author)
-        time.sleep(1)
+        time.sleep(3)
 
         if cat:
             clean_title = unicodedata.normalize('NFKD', listings[k]['title']).encode('ascii', 'ignore')
