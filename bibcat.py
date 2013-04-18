@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import codecs, unicodedata
-import urllib
+import urllib, urllib2
 import feedparser
 import io, time, sys, re
 
@@ -227,16 +227,19 @@ if __name__ == "__main__": # {{{
     start = 0
     to = len(listings)
 
+    count = 0
+
     for k in range(start, to):
+        count   = count + 1
         authors = listings[k]['author']
-        author = authors.split(' and ')[0]
+        author  = authors.split(' and ')[0]
 
         cat = find_arxiv_category(listings[k]['title'], author)
         time.sleep(3)
 
         if cat:
             clean_title = unicodedata.normalize('NFKD', listings[k]['title']).encode('ascii', 'ignore')
-            print 'Found: %s' % (clean_title,)
+            # print 'Found: %s' % (clean_title,)
 
             if cat not in cats:
                 cats[cat] = [ listings[k] ]
@@ -245,9 +248,20 @@ if __name__ == "__main__": # {{{
         else:
             cats["nocat"].append( listings[k] )
 
+        print '%s of %s' % (count, to)
+
+    # codecinfo = codecs.lookup("utf8")
+    # wrapper = codecs.StreamReaderWriter(buffer, 
+    #         codecinfo.streamreader, codecinfo.streamwriter)
+
     for k, v in cats.items():
         if len(v) >= 1:
             with open(k + ".bib", "w") as f:
                 for bib in v:
-                    f.writelines(bib['raw'])
+                    encoded_lines = [ l.encode('utf-8') for l in bib['raw'] ]
+                    try:
+                        f.writelines(encoded_lines)
+                    except:
+                        import pdb
+                        pdb.set_trace()
 # }}}
